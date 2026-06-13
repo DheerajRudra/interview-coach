@@ -1,5 +1,11 @@
 const CACHE = 'interview-coach-v1';
-const ASSETS = ['/', '/index.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png'];
+const ASSETS = [
+  '/interview-coach/',
+  '/interview-coach/index.html',
+  '/interview-coach/manifest.json',
+  '/interview-coach/icon-192.png',
+  '/interview-coach/icon-512.png'
+];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
@@ -15,6 +21,10 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request).catch(() => caches.match('/index.html')))
+    caches.match(e.request).then(cached => 
+      cached || fetch(e.request).catch(() => 
+        caches.match('/interview-coach/index.html')
+      )
+    )
   );
 });
