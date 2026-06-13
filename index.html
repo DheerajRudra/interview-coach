@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0F172A"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="Interview Coach"/>
+<link rel="manifest" href="manifest.json"/>
+<title>Interview Coach</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0F172A;--s1:#1E293B;--s2:#273548;--bd:#334155;--ac:#38BDF8;--gn:#34D399;--am:#FBBF24;--rd:#F87171;--tx:#F1F5F9;--mt:#94A3B8;--dm:#475569}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}
+body{max-width:430px;margin:0 auto;display:flex;flex-direction:column}
+.pg{display:none;flex-direction:column;height:100vh;height:100dvh;overflow-y:auto;padding:env(safe-area-inset-top,24px) 20px 0}
+.pg.on{display:flex}
+
+/* API KEY PAGE */
+.apiwrap{flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;padding-bottom:40px}
+.apiwrap h2{font-size:22px;font-weight:700;text-align:center}
+.apiwrap p{font-size:13px;color:var(--mt);line-height:1.6;text-align:center}
+.steps{background:var(--s1);border-radius:14px;padding:14px 16px;font-size:13px;color:var(--mt);line-height:2;border:1px solid var(--bd)}
+.steps b{color:var(--tx)}
+input.apikey{width:100%;background:var(--s1);border:2px solid var(--bd);border-radius:12px;padding:13px 14px;font-size:14px;color:var(--tx);font-family:monospace;outline:none;-webkit-appearance:none}
+input.apikey:focus{border-color:var(--ac)}
+.bigbtn{width:100%;padding:15px;border-radius:30px;background:var(--ac);color:#0F172A;border:none;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:-.2px}
+.bigbtn:disabled{background:var(--s2);color:var(--dm);cursor:not-allowed}
+
+/* SETUP PAGE */
+.setupbody{flex:1;overflow-y:auto;padding-bottom:100px}
+.hero{text-align:center;padding:24px 0 18px}
+.hico{width:58px;height:58px;background:#1E3A5F;border:2px solid #2D5A8E;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 12px}
+.hero h1{font-size:24px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px}
+.hero p{font-size:13px;color:var(--mt)}
+.lbl{font-size:11px;font-weight:700;color:var(--dm);letter-spacing:.08em;text-transform:uppercase;margin:18px 0 8px}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rc{background:var(--s1);border:2px solid var(--bd);border-radius:14px;padding:12px;cursor:pointer;transition:border-color .15s}
+.rc.sel{background:#0C2D4A;border-color:var(--ac)}
+.rc .ri{font-size:20px;margin-bottom:6px;display:block}
+.rc .rn{font-size:13px;font-weight:600}
+.rc .rd{font-size:11px;color:var(--mt);margin-top:2px}
+.pills{display:flex;gap:8px}
+.pill{flex:1;padding:9px 4px;border:2px solid var(--bd);border-radius:30px;background:var(--s1);font-size:13px;font-weight:500;color:var(--mt);text-align:center;cursor:pointer;transition:all .15s}
+.pill.pe{background:#052E16;border-color:var(--gn);color:var(--gn)}
+.pill.pm{background:#1C1917;border-color:var(--am);color:var(--am)}
+.pill.ph{background:#2D0A0A;border-color:var(--rd);color:var(--rd)}
+.pill.pc{background:#0C2D4A;border-color:var(--ac);color:var(--ac)}
+.stickybot{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;padding:14px 20px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--bg) 35%)}
+
+/* INTERVIEW PAGE */
+.ivhdr{display:flex;align-items:center;justify-content:space-between;padding:12px 0 8px;flex-shrink:0}
+.endbtn{background:var(--s1);border:1px solid var(--bd);color:var(--mt);font-size:12px;padding:5px 10px;border-radius:16px;cursor:pointer}
+.qtk{font-size:13px;font-weight:600;color:var(--mt)}
+.tmr{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;min-width:36px;text-align:right}
+.tmr.w{color:var(--rd)}
+.prog{height:3px;background:var(--bd);border-radius:2px;margin-bottom:14px;flex-shrink:0}
+.pf{height:100%;border-radius:2px;background:var(--ac);transition:width .5s}
+.ivscroll{flex:1;overflow-y:auto;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+.qcard{background:var(--s1);border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid var(--bd)}
+.qey{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--ac);text-transform:uppercase;margin-bottom:8px}
+.qtxt{font-size:16px;font-weight:600;line-height:1.5}
+.hbtn{margin-top:10px;font-size:12px;color:var(--mt);background:none;border:none;cursor:pointer;padding:0}
+.hbox{margin-top:8px;background:#0C2D4A;border-radius:10px;padding:10px 12px;font-size:13px;color:#7DD3FC;line-height:1.6;display:none}
+.hbox.op{display:block}
+
+/* MIC ZONE */
+.mzone{background:var(--s1);border-radius:14px;padding:20px 16px;margin-bottom:12px;border:1px solid var(--bd);display:flex;flex-direction:column;align-items:center;gap:12px}
+.mring{width:90px;height:90px;border-radius:50%;border:3px solid var(--bd);background:var(--s2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative}
+.mring.rec{border-color:var(--rd);background:#2D0A0A}
+.mring.thinking{border-color:var(--ac);background:#0C2D4A}
+.mring.done{border-color:var(--gn);background:#052E16}
+.mring svg{width:36px;height:36px;pointer-events:none}
+.wbar{display:none;align-items:center;gap:3px;height:20px;position:absolute;bottom:-28px;left:50%;transform:translateX(-50%)}
+.wbar.on{display:flex}
+.wbar span{width:3px;border-radius:2px;background:var(--rd);display:block}
+.wbar span:nth-child(1){animation:wb .65s ease-in-out infinite}
+.wbar span:nth-child(2){animation:wb .65s ease-in-out .12s infinite}
+.wbar span:nth-child(3){animation:wb .65s ease-in-out .24s infinite}
+.wbar span:nth-child(4){animation:wb .65s ease-in-out .12s infinite}
+.wbar span:nth-child(5){animation:wb .65s ease-in-out 0s infinite}
+@keyframes wb{0%,100%{height:3px}50%{height:18px}}
+.mstat{font-size:14px;font-weight:700;color:var(--tx);text-align:center}
+.msub{font-size:12px;color:var(--mt);text-align:center;line-height:1.4}
+.tbox{width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--dm);line-height:1.65;min-height:64px;font-style:italic}
+.tbox.live{color:var(--tx);font-style:normal}
+
+/* FEEDBACK */
+.fbcard{background:var(--s1);border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid var(--bd);display:none}
+.fbtl{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--mt);text-transform:uppercase;margin-bottom:12px}
+.scrow{display:flex;gap:8px;margin-bottom:14px}
+.sb{flex:1;background:var(--bg);border-radius:10px;padding:9px 4px;text-align:center;border:1px solid var(--bd)}
+.sb .sv{font-size:20px;font-weight:700;display:block}
+.sb .sk{font-size:10px;color:var(--mt);margin-top:2px}
+.frow{margin-bottom:10px}
+.frow .fl{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
+.frow .fb{font-size:13px;color:var(--mt);line-height:1.6}
+.ovb{display:inline-block;padding:3px 12px;border-radius:16px;font-size:12px;font-weight:700;margin-bottom:12px}
+.nav{display:none;gap:10px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+.nb{flex:1;padding:13px;border-radius:30px;border:2px solid var(--bd);background:var(--s1);color:var(--tx);font-size:14px;font-weight:600;cursor:pointer}
+.nb.p{background:var(--ac);color:#0F172A;border-color:var(--ac)}
+
+/* SUMMARY */
+.sumhdr{padding:20px 0 12px;text-align:center;flex-shrink:0}
+.sumhdr h2{font-size:22px;font-weight:700;margin-bottom:3px}
+.sumhdr p{font-size:13px;color:var(--mt)}
+.sumbody{flex:1;overflow-y:auto;padding-bottom:100px}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.sst{background:var(--s1);border-radius:14px;padding:12px;text-align:center;border:1px solid var(--bd)}
+.sst .sv{font-size:22px;font-weight:700;color:var(--ac);display:block}
+.sst .sk{font-size:11px;color:var(--mt);margin-top:2px}
+.ri{background:var(--s1);border-radius:14px;padding:12px;margin-bottom:8px;border:1px solid var(--bd)}
+.rq{font-size:13px;font-weight:600;margin-bottom:4px;line-height:1.4}
+.rfb{font-size:12px;color:var(--mt);line-height:1.5}
+</style>
+</head>
+<body>
+
+<!-- API KEY PAGE -->
+<div id="p-api" class="pg on">
+  <div class="apiwrap">
+    <div style="text-align:center;font-size:48px">🔑</div>
+    <h2>Enter API Key</h2>
+    <p>One-time setup. Your key is saved only on your phone.</p>
+    <div class="steps">
+      <b>Get your free key:</b><br/>
+      1. Open <b>console.anthropic.com</b><br/>
+      2. Sign up free → <b>API Keys</b><br/>
+      3. Click <b>Create Key</b> → Copy it<br/>
+      4. Paste below and tap Save
+    </div>
+    <input class="apikey" id="keyinput" type="text" placeholder="sk-ant-api03-..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+    <button class="bigbtn" onclick="saveKey()">Save and continue →</button>
+    <p style="font-size:11px;color:var(--dm);text-align:center">Stored only on your device. Never shared.</p>
+  </div>
+</div>
+
+<!-- SETUP PAGE -->
+<div id="p-setup" class="pg">
+  <div class="setupbody">
+    <div class="hero">
+      <div class="hico">🎙️</div>
+      <h1>Interview Coach</h1>
+      <p>Speak your answers · Get AI feedback</p>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:2px">
+      <button onclick="goKey()" style="font-size:11px;color:var(--dm);background:none;border:none;cursor:pointer">Change API key</button>
+    </div>
+    <div class="lbl">Your role</div>
+    <div class="rgrid">
+      <div class="rc" data-r="Playwright Automation Engineer" onclick="selR(this)"><span class="ri">🧪</span><div class="rn">Playwright</div><div class="rd">Automation testing</div></div>
+      <div class="rc" data-r="JavaScript Developer" onclick="selR(this)"><span class="ri">🟨</span><div class="rn">JavaScript</div><div class="rd">Frontend / Node</div></div>
+      <div class="rc" data-r="TypeScript Developer" onclick="selR(this)"><span class="ri">🔷</span><div class="rn">TypeScript</div><div class="rd">Typed JS dev</div></div>
+      <div class="rc" data-r="Frontend Engineer" onclick="selR(this)"><span class="ri">🖥️</span><div class="rn">Frontend</div><div class="rd">UI engineering</div></div>
+      <div class="rc" data-r="Full Stack Engineer" onclick="selR(this)"><span class="ri">⚡</span><div class="rn">Full Stack</div><div class="rd">End-to-end dev</div></div>
+      <div class="rc" data-r="QA Engineer" onclick="selR(this)"><span class="ri">🐛</span><div class="rn">QA Engineer</div><div class="rd">Quality assurance</div></div>
+    </div>
+    <div class="lbl">Difficulty</div>
+    <div class="pills">
+      <div class="pill" data-v="easy" onclick="selP(this,'d')">Entry</div>
+      <div class="pill pm" data-v="medium" onclick="selP(this,'d')">Mid</div>
+      <div class="pill" data-v="hard" onclick="selP(this,'d')">Senior</div>
+    </div>
+    <div class="lbl">Questions</div>
+    <div class="pills">
+      <div class="pill" data-v="3" onclick="selP(this,'c')">3 Quick</div>
+      <div class="pill pc" data-v="5" onclick="selP(this,'c')">5 Standard</div>
+      <div class="pill" data-v="8" onclick="selP(this,'c')">8 Full</div>
+    </div>
+  </div>
+  <div class="stickybot">
+    <button class="bigbtn" id="sbtn" onclick="begin()" disabled>Select a role to start</button>
+  </div>
+</div>
+
+<!-- INTERVIEW PAGE -->
+<div id="p-iv" class="pg">
+  <div class="ivhdr">
+    <button class="endbtn" onclick="endEarly()">✕ End</button>
+    <span class="qtk" id="qtk">Q 1 / 5</span>
+    <span class="tmr" id="tmr">2:00</span>
+  </div>
+  <div class="prog"><div class="pf" id="pf" style="width:0%"></div></div>
+  <div class="ivscroll">
+    <div class="qcard">
+      <div class="qey">Interviewer asks</div>
+      <div class="qtxt" id="qtxt"></div>
+      <button class="hbtn" onclick="toggleH()">💡 <span id="hlbl">Show hint</span></button>
+      <div class="hbox" id="hbox"></div>
+    </div>
+    <div class="mzone">
+      <div style="position:relative;margin-bottom:24px">
+        <div class="mring" id="mr" onclick="toggleMic()">
+          <svg viewBox="0 0 36 36" fill="none" id="mico">
+            <rect x="12" y="3" width="12" height="17" rx="6" fill="#38BDF8"/>
+            <path d="M6 18c0 6.627 5.373 12 12 12s12-5.373 12-12" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="18" y1="30" x2="18" y2="34" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="12" y1="34" x2="24" y2="34" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <div class="wbar" id="wb"><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+      </div>
+      <div class="mstat" id="mstat">Tap to start speaking</div>
+      <div class="msub" id="msub">Tap once to start · tap again to stop</div>
+      <div class="tbox" id="tbox">Your spoken answer will appear here...</div>
+    </div>
+    <div class="fbcard" id="fbc">
+      <div class="fbtl">AI Feedback</div>
+      <div id="fbcon"></div>
+    </div>
+    <div class="nav" id="nav">
+      <button class="nb" onclick="skipQ()">Skip</button>
+      <button class="nb p" onclick="nextQ()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY PAGE -->
+<div id="p-sum" class="pg">
+  <div class="sumhdr"><h2>Session done! 🎉</h2><p>Your performance summary</p></div>
+  <div class="sumbody">
+    <div class="sgrid">
+      <div class="sst"><span class="sv" id="sa">—</span><span class="sk">Avg score</span></div>
+      <div class="sst"><span class="sv" id="sn">—</span><span class="sk">Answered</span></div>
+      <div class="sst"><span class="sv" id="st">—</span><span class="sk">Time</span></div>
+    </div>
+    <div id="rl"></div>
+  </div>
+  <div class="stickybot"><button class="bigbtn" onclick="restart()">Practice again</button></div>
+</div>
+
+<script>
+const QB={
+  'Playwright Automation Engineer':{
+    easy:[
+      {q:'What is Playwright and how does it differ from Selenium?',h:'Auto-waiting, multi-browser support, and modern API design.'},
+      {q:'What is the Page Object Model and why do we use it?',h:'Maintainability, reusability, separation of concerns.'},
+      {q:'Name three built-in Playwright locators and when to use each.',h:'getByRole, getByText, getByLabel — prefer accessibility-based.'},
+      {q:'How do you run only the failed test cases in Playwright?',h:'npx playwright test --last-failed and retries in config.'},
+      {q:'What is a fixture in Playwright and name built-in ones.',h:'page, browser, context, request — auto setup and teardown.'},
+      {q:'What are the different types of waits in Playwright?',h:'Auto-wait, waitForSelector, waitForURL, waitForLoadState.'},
+    ],
+    medium:[
+      {q:'How do you intercept and mock a network API response?',h:'page.route() with route.fulfill() — set contentType and body.'},
+      {q:'How do you handle authentication across multiple tests?',h:'storageState, globalSetup, saving session to auth.json.'},
+      {q:'How do you create a custom fixture?',h:'test.extend with generics, the use() function, teardown after use.'},
+      {q:'How would you test an infinite scroll page?',h:'Loop: count items, scroll last into view, stop when count stops.'},
+      {q:'How do you handle file uploads in Playwright?',h:'setInputFiles() on the file input element.'},
+      {q:'How do you capture and assert on a network request payload?',h:'page.on of request event, req.postData(), timing.'},
+    ],
+    hard:[
+      {q:'Design a parallel test execution strategy for a large suite.',h:'workers config, fullyParallel, worker-scoped fixtures, isolation.'},
+      {q:'How would you implement visual regression testing in CI?',h:'toHaveScreenshot(), baseline images, threshold config.'},
+      {q:'How do you handle flaky tests and reduce instability?',h:'Root cause analysis, better waits, retry strategies, isolation.'},
+    ],
+  },
+  'JavaScript Developer':{
+    easy:[
+      {q:'What is the difference between var, let, and const?',h:'Scope, hoisting, and mutability differences.'},
+      {q:'Explain how closures work with a practical example.',h:'Function remembers variables from outer scope after it closes.'},
+      {q:'What is the difference between == and ===?',h:'Type coercion vs strict equality.'},
+      {q:'Explain event bubbling and how to stop it.',h:'Events bubble up from child to parent. stopPropagation.'},
+    ],
+    medium:[
+      {q:'Write and explain a debounce function from scratch.',h:'clearTimeout on each call, setTimeout with delay, apply for context.'},
+      {q:'How does the JavaScript event loop work?',h:'Call stack, Web APIs, callback queue, microtask queue.'},
+      {q:'Explain Promises and how async await builds on them.',h:'Pending, fulfilled, rejected states. async await is syntactic sugar.'},
+      {q:'What is memoization and how would you implement it?',h:'Cache results by argument key using Map.'},
+    ],
+    hard:[
+      {q:'Implement your own version of Promise.all from scratch.',h:'Track count, resolve when all resolve, reject on first rejection.'},
+      {q:'Explain currying and implement a curry function.',h:'Accumulate args until args.length is met, then call fn.'},
+      {q:'Write an EventEmitter class with on, off, and emit.',h:'Map event names to listener arrays, filter on off, loop on emit.'},
+    ],
+  },
+  'TypeScript Developer':{
+    easy:[
+      {q:'What is TypeScript and why choose it over JavaScript?',h:'Static typing, better tooling, compile-time type safety.'},
+      {q:'What is the difference between an interface and a type?',h:'Interfaces are extendable and mergeable; types support unions.'},
+      {q:'What are generics in TypeScript?',h:'Type parameters for reusable type-safe components.'},
+    ],
+    medium:[
+      {q:'Explain discriminated unions with a real-world use case.',h:'Shared discriminant field like status and exhaustive switch.'},
+      {q:'Name five built-in utility types and explain each.',h:'Partial, Required, Readonly, Pick, Omit, Record, ReturnType.'},
+      {q:'How do function overloads work in TypeScript?',h:'Multiple signature declarations plus one implementation.'},
+    ],
+    hard:[
+      {q:'Build a DeepReadonly utility type recursively.',h:'readonly mapped type that recurses into nested objects.'},
+      {q:'Explain mapped types and build a custom one.',h:'Iterate over keys and transform — optional, readonly, remapped.'},
+    ],
+  },
+  'Frontend Engineer':{
+    easy:[
+      {q:'What is the CSS box model and how does border-box change it?',h:'Content plus padding plus border plus margin.'},
+      {q:'Explain the difference between flexbox and CSS Grid.',h:'Flex is one-dimensional; Grid is two-dimensional.'},
+    ],
+    medium:[
+      {q:'How does browser rendering work from HTML to pixels?',h:'DOM, CSSOM, Render tree, Layout, Paint, Composite.'},
+      {q:'What are Core Web Vitals and why do they matter?',h:'LCP, INP, CLS — UX signals that affect SEO.'},
+      {q:'Explain SSR, SSG, and CSR and when to use each.',h:'When HTML is generated: server, build time, or browser.'},
+    ],
+    hard:[
+      {q:'How would you diagnose and fix a slow-rendering React app?',h:'React Profiler, memo, useMemo, useCallback, virtualization.'},
+    ],
+  },
+  'Full Stack Engineer':{
+    easy:[
+      {q:'What is REST and what are the main HTTP methods?',h:'GET, POST, PUT, PATCH, DELETE — semantic meaning.'},
+      {q:'What is the difference between SQL and NoSQL databases?',h:'Schema vs schemaless, ACID vs BASE, relational vs document.'},
+    ],
+    medium:[
+      {q:'How does JWT authentication work end to end?',h:'Header Payload Signature, signing, verifying on each request.'},
+      {q:'Explain horizontal vs vertical scaling.',h:'Vertical is bigger machine; Horizontal is more machines with load balancer.'},
+      {q:'What are microservices and their tradeoffs?',h:'Independent deployability vs distributed systems complexity.'},
+    ],
+    hard:[
+      {q:'How would you design a URL shortener at scale?',h:'Hash generation, collision handling, Redis caching, redirect service.'},
+    ],
+  },
+  'QA Engineer':{
+    easy:[
+      {q:'What is the difference between functional and non-functional testing?',h:'Functional checks behavior; non-functional checks performance and security.'},
+      {q:'Explain the testing pyramid.',h:'Unit many cheap fast, Integration, E2E few expensive slow.'},
+    ],
+    medium:[
+      {q:'How do you decide what to automate versus test manually?',h:'Frequency, stability, risk, ROI — automate regression.'},
+      {q:'What is boundary value analysis and equivalence partitioning?',h:'BVA tests edges; EP groups inputs that behave the same.'},
+      {q:'What makes a good bug report?',h:'Title, steps to reproduce, expected vs actual, environment, severity.'},
+    ],
+    hard:[
+      {q:'How would you build a test strategy for a brand new product?',h:'Risk assessment, test levels, tools, CI integration, ownership.'},
+    ],
+  },
+};
+
+// ── STATE ─────────────────────────────────────────────────────
+let cfg={role:null,diff:'medium',cnt:5};
+let qs=[],qi=0,results=[],t0=null;
+let tid=null,tLeft=120;
+let isRec=false,SR=null,accumulated='';
+
+// ── INIT ──────────────────────────────────────────────────────
+window.addEventListener('load',()=>{
+  const k=localStorage.getItem('ivkey')||'';
+  if(k.startsWith('sk-')) go('p-setup');
+  else go('p-api');
+});
+
+function go(id){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+
+// ── API KEY ───────────────────────────────────────────────────
+function saveKey(){
+  const k=document.getElementById('keyinput').value.trim();
+  if(!k.startsWith('sk-')){alert('Invalid key. Must start with sk-ant-...');return;}
+  localStorage.setItem('ivkey',k);
+  go('p-setup');
+}
+function goKey(){localStorage.removeItem('ivkey');document.getElementById('keyinput').value='';go('p-api');}
+
+// ── SETUP ─────────────────────────────────────────────────────
+function selR(el){
+  document.querySelectorAll('.rc').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');cfg.role=el.dataset.r;
+  const b=document.getElementById('sbtn');b.disabled=false;b.textContent='Start interview 🎙️';
+}
+function selP(el,t){
+  if(t==='d'){
+    document.querySelectorAll('.pill[data-v="easy"],.pill[data-v="medium"],.pill[data-v="hard"]').forEach(p=>p.classList.remove('pe','pm','ph'));
+    el.classList.add({easy:'pe',medium:'pm',hard:'ph'}[el.dataset.v]);
+    cfg.diff=el.dataset.v;
+  } else {
+    document.querySelectorAll('.pill[data-v="3"],.pill[data-v="5"],.pill[data-v="8"]').forEach(p=>p.classList.remove('pc'));
+    el.classList.add('pc');cfg.cnt=parseInt(el.dataset.v);
+  }
+}
+
+// ── BEGIN ─────────────────────────────────────────────────────
+async function begin(){
+  if(!cfg.role)return;
+  try{const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(t=>t.stop());}
+  catch(e){alert('Please allow microphone access in Chrome settings then try again.');return;}
+  const pool=(QB[cfg.role]?.[cfg.diff])||[];
+  qs=[...pool].sort(()=>Math.random()-.5).slice(0,Math.min(cfg.cnt,pool.length));
+  if(!qs.length){alert('No questions available.');return;}
+  qi=0;results=[];t0=Date.now();
+  go('p-iv');loadQ();
+}
+
+// ── QUESTION ──────────────────────────────────────────────────
+function loadQ(){
+  killRec();
+  const q=qs[qi];
+  document.getElementById('qtk').textContent=`Q ${qi+1} / ${qs.length}`;
+  document.getElementById('pf').style.width=`${(qi/qs.length)*100}%`;
+  document.getElementById('qtxt').textContent=q.q;
+  document.getElementById('hbox').textContent=q.h;
+  document.getElementById('hbox').classList.remove('op');
+  document.getElementById('hlbl').textContent='Show hint';
+  setTbox('','');
+  document.getElementById('fbc').style.display='none';
+  document.getElementById('nav').style.display='none';
+  setMUI('idle','Tap to start speaking','Tap once to start · tap again to stop');
+  document.getElementById('wb').classList.remove('on');
+  resetTimer();
+}
+
+function toggleH(){
+  const b=document.getElementById('hbox');const op=b.classList.toggle('op');
+  document.getElementById('hlbl').textContent=op?'Hide hint':'Show hint';
+}
+
+// ── TIMER ─────────────────────────────────────────────────────
+function resetTimer(){
+  clearInterval(tid);tLeft=120;drawTimer();
+  tid=setInterval(()=>{tLeft--;drawTimer();if(tLeft<=0){clearInterval(tid);stopAndEval();}},1000);
+}
+function drawTimer(){
+  const el=document.getElementById('tmr');
+  const m=Math.floor(tLeft/60),s=tLeft%60;
+  el.textContent=`${m}:${s.toString().padStart(2,'0')}`;
+  el.className='tmr'+(tLeft<=20?' w':'');
+}
+
+// ── MIC UI ────────────────────────────────────────────────────
+function setMUI(state,label,sub){
+  const r=document.getElementById('mr');
+  r.className='mring'+(state!=='idle'?' '+state:'');
+  document.getElementById('mstat').textContent=label;
+  document.getElementById('msub').textContent=sub;
+}
+function setTbox(txt,mode){
+  const el=document.getElementById('tbox');
+  el.textContent=txt||'Your spoken answer will appear here...';
+  el.className='tbox'+(mode==='live'?' live':'');
+}
+
+// ── RECORDING — Android-optimised ────────────────────────────
+// Key insight for Android: use continuous=false and restart on each onend
+// This is more stable than continuous=true on mobile Chrome
+
+function toggleMic(){
+  if(isRec) stopAndEval();
+  else startRec();
+}
+
+function startRec(){
+  const SRC=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SRC){setMUI('idle','Not supported','Please use Google Chrome');return;}
+  isRec=true;
+  accumulated='';
+  setMUI('rec','Listening... tap to stop','Speak your answer clearly');
+  document.getElementById('wb').classList.add('on');
+  doRec(SRC);
+}
+
+function doRec(SRC){
+  if(!isRec)return;
+  try{
+    SR=new SRC();
+    SR.continuous=false;        // false = most stable on Android Chrome
+    SR.interimResults=true;
+    SR.lang='en-IN';            // Indian English
+    SR.maxAlternatives=1;
+
+    SR.onresult=(e)=>{
+      let fin='',int='';
+      for(let i=0;i<e.results.length;i++){
+        if(e.results[i].isFinal) fin+=e.results[i][0].transcript;
+        else int+=e.results[i][0].transcript;
+      }
+      if(fin) accumulated+=fin+' ';
+      setTbox((accumulated+int).trim(),'live');
+    };
+
+    SR.onend=()=>{
+      // Auto-restart if still recording
+      if(isRec){
+        setTimeout(()=>doRec(SRC),150);
+      }
+    };
+
+    SR.onerror=(e)=>{
+      if(e.error==='not-allowed'){
+        isRec=false;
+        document.getElementById('wb').classList.remove('on');
+        setMUI('idle','Mic blocked','Allow mic in Chrome settings → refresh');
+        return;
+      }
+      // For all other errors (no-speech, audio-capture etc) just restart
+      if(isRec){setTimeout(()=>doRec(SRC),300);}
+    };
+
+    SR.start();
+  }catch(err){
+    if(isRec){setTimeout(()=>doRec(SRC),500);}
+  }
+}
+
+function killRec(){
+  isRec=false;
+  if(SR){try{SR.onend=null;SR.onerror=null;SR.stop();}catch(_){}SR=null;}
+  document.getElementById('wb').classList.remove('on');
+}
+
+function stopAndEval(){
+  const ans=accumulated.trim();
+  killRec();
+  clearInterval(tid);
+  if(ans.length>4){
+    setMUI('thinking','Getting AI feedback...','Please wait...');
+    getAI(ans);
+  } else {
+    setMUI('idle','Nothing recorded','Tap the mic and try speaking again');
+    resetTimer();
+  }
+}
+
+// ── AI FEEDBACK ───────────────────────────────────────────────
+async function getAI(ans){
+  document.getElementById('fbc').style.display='block';
+  document.getElementById('fbcon').innerHTML='<p style="text-align:center;color:var(--mt);padding:16px 0;font-size:13px">Analysing your answer...</p>';
+  const key=localStorage.getItem('ivkey')||'';
+  if(!key.startsWith('sk-')){
+    document.getElementById('fbcon').innerHTML='<p style="color:var(--rd);font-size:13px">No API key. <button onclick="goKey()" style="color:var(--ac);background:none;border:none;cursor:pointer;font-size:13px;text-decoration:underline">Add key</button></p>';
+    document.getElementById('nav').style.display='flex';
+    results.push({q:qs[qi].q,ans,fb:null});
+    setMUI('idle','Tap to re-record','');
+    return;
+  }
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:500,
+        messages:[{role:'user',content:`Technical interviewer for ${cfg.role} (${cfg.diff} level).
+Q: "${qs[qi].q}"
+Answer: "${ans}"
+Reply ONLY in JSON, no extra text:
+{"c":7,"t":6,"k":5,"o":"Good","s":"Strength sentence.","i":"Improvement sentence.","p":"Key points sentence."}`}]
+      })
+    });
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'Error '+r.status);}
+    const d=await r.json();
+    const raw=d.content?.map(x=>x.text||'').join('')||'';
+    const fb=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    results.push({q:qs[qi].q,ans,fb});
+    showFB(fb);
+    setMUI('done','Done! Tap mic to re-record','');
+  }catch(e){
+    results.push({q:qs[qi].q,ans,fb:null});
+    document.getElementById('fbcon').innerHTML=`<p style="color:var(--rd);font-size:13px">Error: ${e.message}.<br/>Check your API key and internet.</p>`;
+    setMUI('idle','Tap to re-record','');
+  }
+  document.getElementById('nav').style.display='flex';
+}
+
+function showFB(fb){
+  const ov=fb.o;
+  const[bg,c]=ov==='Excellent'?['#052E16','#34D399']:ov==='Good'?['#1C1917','#FBBF24']:['#2D0A0A','#F87171'];
+  document.getElementById('fbcon').innerHTML=`
+    <span class="ovb" style="background:${bg};color:${c}">${ov}</span>
+    <div class="scrow">
+      <div class="sb"><span class="sv" style="color:#38BDF8">${fb.c}</span><span class="sk">Clarity</span></div>
+      <div class="sb"><span class="sv" style="color:#34D399">${fb.t}</span><span class="sk">Technical</span></div>
+      <div class="sb"><span class="sv" style="color:#FBBF24">${fb.k}</span><span class="sk">Complete</span></div>
+    </div>
+    <div class="frow"><div class="fl" style="color:#34D399">✓ Strengths</div><div class="fb">${fb.s}</div></div>
+    <div class="frow"><div class="fl" style="color:#FBBF24">↑ Improve</div><div class="fb">${fb.i}</div></div>
+    <div class="frow"><div class="fl" style="color:#38BDF8">💡 Key points</div><div class="fb">${fb.p}</div></div>`;
+}
+
+function nextQ(){qi++;qi>=qs.length?showSum():loadQ();}
+function skipQ(){results.push({q:qs[qi].q,ans:'skipped',fb:null});nextQ();}
+function endEarly(){clearInterval(tid);killRec();results.length?showSum():go('p-setup');}
+
+function showSum(){
+  go('p-sum');
+  const ans=results.filter(r=>r.fb).length;
+  const sc=results.filter(r=>r.fb).map(r=>Math.round((r.fb.c+r.fb.t+r.fb.k)/3));
+  const avg=sc.length?Math.round(sc.reduce((a,b)=>a+b,0)/sc.length):0;
+  const el=Math.round((Date.now()-t0)/1000);
+  document.getElementById('sa').textContent=avg?`${avg}/10`:'—';
+  document.getElementById('sn').textContent=`${ans}/${qs.length}`;
+  document.getElementById('st').textContent=`${Math.floor(el/60)}:${(el%60).toString().padStart(2,'0')}`;
+  const bc=o=>o==='Excellent'?['#052E16','#34D399']:o==='Good'?['#1C1917','#FBBF24']:o==='Needs Work'?['#2D0A0A','#F87171']:['var(--s1)','var(--dm)'];
+  document.getElementById('rl').innerHTML=results.map((r,i)=>{
+    const ov=r.fb?.o||'Skipped';const[bg,c]=bc(ov);
+    return `<div class="ri">
+      <div style="margin-bottom:5px"><span style="background:${bg};color:${c};padding:2px 10px;border-radius:14px;font-size:11px;font-weight:700">${ov}</span></div>
+      <div class="rq">Q${i+1}: ${r.q}</div>
+      ${r.fb?`<div class="rfb">↑ ${r.fb.i}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function restart(){
+  cfg={role:null,diff:'medium',cnt:5};
+  document.querySelectorAll('.rc').forEach(c=>c.classList.remove('sel'));
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('pe','pm','ph','pc'));
+  document.querySelector('[data-v="medium"]').classList.add('pm');
+  document.querySelector('[data-v="5"]').classList.add('pc');
+  const b=document.getElementById('sbtn');b.disabled=true;b.textContent='Select a role to start';
+  go('p-setup');
+}
+
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
