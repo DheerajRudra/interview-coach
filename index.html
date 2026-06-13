@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0F172A"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Interview Coach"/>
+<link rel="manifest" href="manifest.json"/>
+<title>Interview Coach</title>
+<style>
+:root{
+  --bg:#0F172A;--surface:#1E293B;--surface2:#273548;--border:#334155;
+  --accent:#38BDF8;--green:#34D399;--amber:#FBBF24;--red:#F87171;
+  --text:#F1F5F9;--muted:#94A3B8;--dim:#475569;
+  --r:16px;--rsm:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+body{display:flex;flex-direction:column;max-width:430px;margin:0 auto}
+
+/* SCREENS */
+.scr{display:none;flex-direction:column;min-height:100vh;min-height:100dvh;padding:env(safe-area-inset-top,20px) 20px 0}
+.scr.on{display:flex}
+
+/* SETUP */
+.hero{padding:28px 0 20px;text-align:center}
+.hero-ic{width:60px;height:60px;background:#1E3A5F;border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px;border:1.5px solid #2D5A8E}
+.hero h1{font-size:24px;font-weight:700;letter-spacing:-.5px;margin-bottom:5px}
+.hero p{font-size:13px;color:var(--muted);line-height:1.5}
+.slabel{font-size:11px;font-weight:600;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;margin:18px 0 8px}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rcard{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;transition:all .15s;text-align:left;-webkit-tap-highlight-color:transparent}
+.rcard.sel{background:#0C2D4A;border-color:var(--accent)}
+.rcard .ri{font-size:20px;margin-bottom:6px;display:block}
+.rcard .rn{font-size:13px;font-weight:600}
+.rcard .rd{font-size:11px;color:var(--muted);margin-top:1px}
+.pills{display:flex;gap:8px}
+.pill{flex:1;padding:9px 4px;border:1.5px solid var(--border);border-radius:30px;background:var(--surface);font-size:13px;font-weight:500;color:var(--muted);text-align:center;cursor:pointer;transition:all .15s}
+.pill.se{background:#052E16;border-color:var(--green);color:var(--green)}
+.pill.sm{background:#1C1917;border-color:var(--amber);color:var(--amber)}
+.pill.sh{background:#2D0A0A;border-color:var(--red);color:var(--red)}
+.pill.sc{background:#0C2D4A;border-color:var(--accent);color:var(--accent)}
+.sbwrap{padding:16px 0 calc(16px + env(safe-area-inset-bottom,0px))}
+.sbtn{width:100%;padding:15px;border-radius:30px;background:var(--accent);color:#0F172A;border:none;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:-.2px}
+.sbtn:disabled{background:var(--surface2);color:var(--dim);cursor:not-allowed}
+.setup-body{flex:1;overflow-y:auto;padding-bottom:90px}
+
+/* INTERVIEW */
+.ivhdr{display:flex;align-items:center;justify-content:space-between;padding:14px 0 10px}
+.endbtn{background:var(--surface);border:none;color:var(--muted);font-size:12px;padding:5px 10px;border-radius:16px;cursor:pointer}
+.qtk{font-size:13px;font-weight:600;color:var(--muted)}
+.tmr{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.tmr.w{color:var(--red)}
+.prog{height:3px;background:var(--border);border-radius:2px;margin-bottom:16px}
+.pf{height:100%;border-radius:2px;background:var(--accent);transition:width .5s}
+.qcard{background:var(--surface);border-radius:var(--r);padding:18px;margin-bottom:12px;border:1px solid var(--border)}
+.qey{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--accent);text-transform:uppercase;margin-bottom:8px}
+.qtxt{font-size:16px;font-weight:600;line-height:1.5}
+.hbtn{margin-top:10px;font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;padding:0;display:inline-block}
+.hbox{margin-top:8px;background:#0C2D4A;border-radius:var(--rsm);padding:10px 12px;font-size:13px;color:#7DD3FC;line-height:1.6;display:none}
+.hbox.op{display:block}
+
+/* MIC AREA */
+.miczone{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px;background:var(--surface);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border)}
+.micring{width:88px;height:88px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2.5px solid var(--border);background:var(--surface2);transition:all .2s;position:relative;-webkit-tap-highlight-color:transparent}
+.micring.rec{border-color:var(--red);background:#2D0A0A}
+.micring.thinking{border-color:var(--accent);background:#0C2D4A}
+.micring.done{border-color:var(--green);background:#052E16}
+.micring svg{width:36px;height:36px}
+.wavewrap{position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:3px;height:20px}
+.wavewrap.on{display:flex}
+.wavewrap span{display:block;width:3px;border-radius:2px;background:var(--red)}
+.wavewrap span:nth-child(1){animation:wb .6s ease-in-out infinite}
+.wavewrap span:nth-child(2){animation:wb .6s ease-in-out .1s infinite}
+.wavewrap span:nth-child(3){animation:wb .6s ease-in-out .2s infinite}
+.wavewrap span:nth-child(4){animation:wb .6s ease-in-out .1s infinite}
+.wavewrap span:nth-child(5){animation:wb .6s ease-in-out 0s infinite}
+@keyframes wb{0%,100%{height:4px}50%{height:18px}}
+.mstat{font-size:14px;font-weight:600;text-align:center;margin-top:6px}
+.msub{font-size:12px;color:var(--muted);text-align:center}
+
+/* TRANSCRIPT */
+.tbox{width:100%;background:var(--bg);border-radius:var(--rsm);padding:12px;font-size:13px;color:var(--dim);line-height:1.65;min-height:60px;border:1px solid var(--border);font-style:italic}
+.tbox.live{color:var(--text);font-style:normal}
+
+/* FEEDBACK */
+.fbcard{background:var(--surface);border-radius:var(--r);padding:16px;margin-bottom:12px;border:1px solid var(--border);display:none}
+.fbttl{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
+.scores{display:flex;gap:8px;margin-bottom:14px}
+.sbox{flex:1;background:var(--bg);border-radius:var(--rsm);padding:9px 4px;text-align:center;border:1px solid var(--border)}
+.sbox .sv{font-size:20px;font-weight:700;display:block}
+.sbox .sk{font-size:10px;color:var(--muted);margin-top:1px}
+.fbrow{margin-bottom:10px}
+.fbrow .lb{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
+.fbrow .bd{font-size:13px;color:var(--muted);line-height:1.6}
+.ovbadge{display:inline-block;padding:3px 10px;border-radius:16px;font-size:12px;font-weight:700;margin-bottom:12px}
+.nav{display:none;gap:10px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+.nbtn{flex:1;padding:13px;border-radius:30px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-weight:600;cursor:pointer}
+.nbtn.p{background:var(--accent);color:#0F172A;border-color:var(--accent)}
+.ivbody{flex:1;overflow-y:auto;padding-bottom:10px}
+
+/* SUMMARY */
+.sumhdr{padding:24px 0 14px;text-align:center}
+.sumhdr h2{font-size:22px;font-weight:700;margin-bottom:3px}
+.sumhdr p{font-size:13px;color:var(--muted)}
+.sumbody{flex:1;overflow-y:auto;padding-bottom:100px}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.sstat{background:var(--surface);border-radius:var(--r);padding:12px;text-align:center;border:1px solid var(--border)}
+.sstat .sv{font-size:22px;font-weight:700;color:var(--accent);display:block}
+.sstat .sk{font-size:11px;color:var(--muted);margin-top:2px}
+.ritem{background:var(--surface);border-radius:var(--r);padding:12px;margin-bottom:8px;border:1px solid var(--border)}
+.rq{font-size:13px;font-weight:600;margin-bottom:5px;line-height:1.4}
+.rfb{font-size:12px;color:var(--muted);line-height:1.5}
+.sumact{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--bg) 35%)}
+
+/* API KEY SCREEN */
+.apiscreen{flex:1;display:flex;flex-direction:column;justify-content:center;padding:20px 0;gap:14px}
+.apiscreen h2{font-size:20px;font-weight:700}
+.apiscreen p{font-size:13px;color:var(--muted);line-height:1.6}
+.apiinput{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rsm);padding:12px 14px;font-size:13px;color:var(--text);font-family:monospace;outline:none}
+.apiinput:focus{border-color:var(--accent)}
+.apibtn{width:100%;padding:14px;border-radius:30px;background:var(--accent);color:#0F172A;border:none;font-size:15px;font-weight:700;cursor:pointer}
+.apistep{background:var(--surface);border-radius:var(--rsm);padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.9;border:1px solid var(--border)}
+.apistep strong{color:var(--text)}
+</style>
+</head>
+<body>
+
+<!-- API KEY SCREEN -->
+<div id="s-api" class="scr on">
+  <div class="apiscreen">
+    <div style="text-align:center;font-size:40px;margin-bottom:4px">🔑</div>
+    <h2 style="text-align:center">Enter your API key</h2>
+    <p style="text-align:center">You only need to do this once. Your key is saved on your phone only.</p>
+    <div class="apistep">
+      <strong>Get your free key:</strong><br/>
+      1. Go to <strong>console.anthropic.com</strong><br/>
+      2. Sign up free<br/>
+      3. Click <strong>API Keys → Create Key</strong><br/>
+      4. Copy the key and paste below
+    </div>
+    <input class="apiinput" id="api-input" type="password" placeholder="sk-ant-api03-xxxxxxxxxxxx" autocomplete="off" autocorrect="off" spellcheck="false"/>
+    <button class="apibtn" onclick="saveKey()">Save and continue →</button>
+    <p style="font-size:11px;color:var(--dim);text-align:center">Your key is stored only on your device. Never shared.</p>
+  </div>
+</div>
+
+<!-- SETUP SCREEN -->
+<div id="s-setup" class="scr">
+  <div class="setup-body">
+    <div class="hero">
+      <div class="hero-ic">🎙️</div>
+      <h1>Interview Coach</h1>
+      <p>Speak your answers out loud.<br/>Get instant AI feedback every time.</p>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:4px">
+      <button onclick="changeKey()" style="font-size:11px;color:var(--dim);background:none;border:none;cursor:pointer">Change API key</button>
+    </div>
+    <div class="slabel">Choose your role</div>
+    <div class="rgrid">
+      <div class="rcard" data-role="Playwright Automation Engineer" onclick="selRole(this)"><span class="ri">🧪</span><div class="rn">Playwright</div><div class="rd">Automation testing</div></div>
+      <div class="rcard" data-role="JavaScript Developer" onclick="selRole(this)"><span class="ri">🟨</span><div class="rn">JavaScript</div><div class="rd">Frontend / Node</div></div>
+      <div class="rcard" data-role="TypeScript Developer" onclick="selRole(this)"><span class="ri">🔷</span><div class="rn">TypeScript</div><div class="rd">Typed JS dev</div></div>
+      <div class="rcard" data-role="Frontend Engineer" onclick="selRole(this)"><span class="ri">🖥️</span><div class="rn">Frontend</div><div class="rd">UI engineering</div></div>
+      <div class="rcard" data-role="Full Stack Engineer" onclick="selRole(this)"><span class="ri">⚡</span><div class="rn">Full Stack</div><div class="rd">End-to-end dev</div></div>
+      <div class="rcard" data-role="QA Engineer" onclick="selRole(this)"><span class="ri">🐛</span><div class="rn">QA Engineer</div><div class="rd">Quality assurance</div></div>
+    </div>
+    <div class="slabel">Difficulty</div>
+    <div class="pills">
+      <div class="pill" data-v="easy" onclick="selPill(this,'diff')">Entry</div>
+      <div class="pill sm" data-v="medium" onclick="selPill(this,'diff')">Mid</div>
+      <div class="pill" data-v="hard" onclick="selPill(this,'diff')">Senior</div>
+    </div>
+    <div class="slabel">Questions per session</div>
+    <div class="pills">
+      <div class="pill" data-v="3" onclick="selPill(this,'cnt')">3 Quick</div>
+      <div class="pill sc" data-v="5" onclick="selPill(this,'cnt')">5 Standard</div>
+      <div class="pill" data-v="8" onclick="selPill(this,'cnt')">8 Full</div>
+    </div>
+  </div>
+  <div class="sbwrap">
+    <button class="sbtn" id="sbtn" onclick="begin()" disabled>Select a role to start</button>
+  </div>
+</div>
+
+<!-- INTERVIEW SCREEN -->
+<div id="s-iv" class="scr">
+  <div class="ivhdr">
+    <button class="endbtn" onclick="endEarly()">✕ End</button>
+    <span class="qtk" id="qtk">Q 1 / 5</span>
+    <span class="tmr" id="tmr">2:00</span>
+  </div>
+  <div class="prog"><div class="pf" id="pf" style="width:0%"></div></div>
+  <div class="ivbody">
+    <div class="qcard">
+      <div class="qey">Interviewer asks</div>
+      <div class="qtxt" id="qtxt"></div>
+      <button class="hbtn" onclick="toggleH()">💡 <span id="hlbl">Show hint</span></button>
+      <div class="hbox" id="hbox"></div>
+    </div>
+    <div class="miczone">
+      <div style="position:relative;margin-bottom:28px">
+        <div class="micring" id="mring" onclick="toggleMic()">
+          <svg id="micsvg" viewBox="0 0 36 36" fill="none">
+            <rect x="12" y="3" width="12" height="17" rx="6" fill="#38BDF8"/>
+            <path d="M6 18c0 6.627 5.373 12 12 12s12-5.373 12-12" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="18" y1="30" x2="18" y2="34" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="12" y1="34" x2="24" y2="34" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <div class="wavewrap" id="waves">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+      <div class="mstat" id="mstat">Tap to speak</div>
+      <div class="msub" id="msub">Tap once to start, tap again to stop</div>
+      <div class="tbox" id="tbox">Your answer appears here as you speak...</div>
+    </div>
+    <div class="fbcard" id="fbcard">
+      <div class="fbttl">AI Feedback</div>
+      <div id="fbcontent"></div>
+    </div>
+    <div class="nav" id="nav">
+      <button class="nbtn" onclick="skipQ()">Skip</button>
+      <button class="nbtn p" onclick="nextQ()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY SCREEN -->
+<div id="s-sum" class="scr">
+  <div class="sumhdr"><h2>Session done! 🎉</h2><p>Here's how you performed</p></div>
+  <div class="sumbody">
+    <div class="sgrid">
+      <div class="sstat"><span class="sv" id="savg">—</span><span class="sk">Avg score</span></div>
+      <div class="sstat"><span class="sv" id="sans">—</span><span class="sk">Answered</span></div>
+      <div class="sstat"><span class="sv" id="stm">—</span><span class="sk">Time</span></div>
+    </div>
+    <div id="revlist"></div>
+  </div>
+  <div class="sumact"><button class="sbtn" onclick="restart()">Practice again</button></div>
+</div>
+
+<script>
+// ── QUESTION BANK ─────────────────────────────────────────────
+const QB={
+  'Playwright Automation Engineer':{
+    easy:[
+      {q:'What is Playwright and how does it differ from Selenium?',h:'Talk about auto-waiting, multi-browser support, and modern API.'},
+      {q:'What is the Page Object Model and why do we use it?',h:'Maintainability, reusability, separation of concerns.'},
+      {q:'Name three built-in Playwright locators and when to use each.',h:'getByRole, getByText, getByLabel — accessibility alignment.'},
+      {q:'How do you run only the failed test cases in Playwright?',h:'npx playwright test --last-failed and retries config.'},
+      {q:'What is a fixture in Playwright?',h:'page, browser, context, request — auto setup and teardown.'},
+      {q:'What are the different types of waits in Playwright?',h:'Auto-wait, waitForSelector, waitForURL, waitForLoadState.'},
+    ],
+    medium:[
+      {q:'How do you intercept and mock a network API response in Playwright?',h:'page.route() with route.fulfill() — set contentType and body.'},
+      {q:'How do you handle authentication efficiently across multiple tests?',h:'storageState, globalSetup, saving session to auth.json.'},
+      {q:'How do you create a custom fixture and what problem does it solve?',h:'test.extend<T>(), use() function, teardown after use.'},
+      {q:'How would you test an infinite scroll page in Playwright?',h:'Loop: count items, scroll last into view, stop when count stops.'},
+      {q:'How do you handle file uploads in Playwright?',h:'setInputFiles() on the file input element.'},
+      {q:'How do you capture and assert on a network request payload?',h:'page.on("request"), req.postData(), timing relative to the action.'},
+    ],
+    hard:[
+      {q:'Design a parallel test execution strategy for a large test suite.',h:'workers config, fullyParallel, worker-scoped fixtures, isolation.'},
+      {q:'How would you implement visual regression testing in CI?',h:'toHaveScreenshot(), baseline images, threshold config, diff reports.'},
+      {q:'Explain how you would handle flaky tests and reduce instability.',h:'Root cause analysis, better waits, retry strategies, test isolation.'},
+    ],
+  },
+  'JavaScript Developer':{
+    easy:[
+      {q:'What is the difference between var, let, and const?',h:'Scope, hoisting, and mutability differences.'},
+      {q:'Explain how closures work with a practical example.',h:'Function remembers variables from outer scope after it closes.'},
+      {q:'What is the difference between == and ===?',h:'Type coercion vs strict equality — 0 == false example.'},
+      {q:'Explain event bubbling and how to stop it.',h:'Events bubble up from child to parent. stopPropagation().'},
+    ],
+    medium:[
+      {q:'Write and explain a debounce function from scratch.',h:'clearTimeout on each call, setTimeout with delay, apply().'},
+      {q:'How does the JavaScript event loop work?',h:'Call stack, Web APIs, callback queue, microtask queue.'},
+      {q:'Explain Promises and how async/await builds on them.',h:'Pending, fulfilled, rejected. async/await is syntactic sugar.'},
+      {q:'What is memoization and how would you implement it?',h:'Cache results by argument key using Map; return cached on repeat.'},
+    ],
+    hard:[
+      {q:'Implement your own version of Promise.all from scratch.',h:'Track count, resolve when all resolve, reject on first rejection.'},
+      {q:'Explain currying and implement a curry function.',h:'Accumulate args until args.length >= fn.length, then call fn.'},
+      {q:'Write an EventEmitter class with on, off, and emit.',h:'Map event names to listener arrays, filter on off, loop on emit.'},
+    ],
+  },
+  'TypeScript Developer':{
+    easy:[
+      {q:'What is TypeScript and why choose it over JavaScript?',h:'Static typing, better tooling, compile-time type safety.'},
+      {q:'What is the difference between an interface and a type?',h:'Interfaces are extendable and mergeable; types support unions.'},
+      {q:'What are generics in TypeScript?',h:'Type parameters for reusable, type-safe components like Array<T>.'},
+    ],
+    medium:[
+      {q:'Explain discriminated unions with a real-world use case.',h:'Shared discriminant field like status; exhaustive switch.'},
+      {q:'Name five built-in utility types and explain each.',h:'Partial, Required, Readonly, Pick, Omit, Record, ReturnType.'},
+      {q:'How do function overloads work in TypeScript?',h:'Multiple signature declarations plus one implementation.'},
+    ],
+    hard:[
+      {q:'Build a DeepReadonly utility type recursively.',h:'readonly [K in keyof T]: T[K] extends object ? DeepReadonly<T[K]> : T[K]'},
+      {q:'Explain mapped types and build a custom one.',h:'[K in keyof T]: transform — optional, readonly, remapped keys.'},
+    ],
+  },
+  'Frontend Engineer':{
+    easy:[
+      {q:'What is the CSS box model and how does box-sizing border-box change it?',h:'Content plus padding plus border plus margin. border-box includes padding and border in width.'},
+      {q:'Explain the difference between flexbox and CSS Grid.',h:'Flex is 1D; Grid is 2D. Use both where appropriate.'},
+    ],
+    medium:[
+      {q:'How does browser rendering work from HTML to pixels?',h:'Parse HTML to DOM, CSS to CSSOM, Render tree, Layout, Paint, Composite.'},
+      {q:'What are Core Web Vitals and why do they matter?',h:'LCP, INP, CLS — UX signals that affect SEO rankings.'},
+      {q:'Explain SSR, SSG, and CSR and when to use each.',h:'When HTML is generated: server per-request, build time, or browser.'},
+    ],
+    hard:[
+      {q:'How would you diagnose and fix a slow-rendering React app?',h:'React Profiler, React.memo, useMemo, useCallback, virtualization.'},
+    ],
+  },
+  'Full Stack Engineer':{
+    easy:[
+      {q:'What is REST and what are the main HTTP methods?',h:'GET, POST, PUT, PATCH, DELETE — semantic meaning of each.'},
+      {q:'What is the difference between SQL and NoSQL databases?',h:'Schema vs schemaless, ACID vs BASE, relational vs document.'},
+    ],
+    medium:[
+      {q:'How does JWT authentication work end to end?',h:'Header.Payload.Signature, signing, verifying on each request.'},
+      {q:'Explain horizontal vs vertical scaling with examples.',h:'Vertical is bigger machine; Horizontal is more machines plus load balancer.'},
+      {q:'What are microservices and what tradeoffs do they introduce?',h:'Independent deployability, team autonomy versus distributed complexity.'},
+    ],
+    hard:[
+      {q:'How would you design a URL shortener like bit.ly at scale?',h:'Hash generation, collision handling, Redis caching, redirect service.'},
+    ],
+  },
+  'QA Engineer':{
+    easy:[
+      {q:'What is the difference between functional and non-functional testing?',h:'Functional: does it work? Non-functional: performance, security, usability.'},
+      {q:'Explain the testing pyramid.',h:'Unit many cheap fast, Integration, E2E few expensive slow.'},
+    ],
+    medium:[
+      {q:'How do you decide what to automate versus test manually?',h:'Frequency, stability, risk, ROI — automate regression; manual for exploratory.'},
+      {q:'What is boundary value analysis and equivalence partitioning?',h:'BVA tests edges; EP groups inputs that behave the same way.'},
+      {q:'What makes a good bug report?',h:'Title, steps to reproduce, expected vs actual, environment, severity.'},
+    ],
+    hard:[
+      {q:'How would you build a test strategy for a brand new product?',h:'Risk assessment, test levels, tools, CI integration, environments, ownership.'},
+    ],
+  },
+};
+
+// ── STATE ─────────────────────────────────────────────────────
+let cfg={role:null,diff:'medium',cnt:5};
+let qs=[],qi=0,results=[],t0=null;
+let rec=null,isRec=false,finalT='',interim='';
+let tid=null,tLeft=120;
+let API_KEY='';
+
+// ── INIT ──────────────────────────────────────────────────────
+window.onload=()=>{
+  API_KEY=localStorage.getItem('iv_api_key')||'';
+  if(API_KEY&&API_KEY.startsWith('sk-')){
+    show('s-setup');
+  } else {
+    show('s-api');
+  }
+};
+
+function saveKey(){
+  const k=document.getElementById('api-input').value.trim();
+  if(!k.startsWith('sk-')){
+    alert('That does not look like a valid key. It should start with sk-ant-...');
+    return;
+  }
+  localStorage.setItem('iv_api_key',k);
+  API_KEY=k;
+  show('s-setup');
+}
+
+function changeKey(){
+  localStorage.removeItem('iv_api_key');
+  API_KEY='';
+  document.getElementById('api-input').value='';
+  show('s-api');
+}
+
+// ── SETUP ─────────────────────────────────────────────────────
+function selRole(el){
+  document.querySelectorAll('.rcard').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  cfg.role=el.dataset.role;
+  const b=document.getElementById('sbtn');
+  b.disabled=false;
+  b.textContent='Start interview 🎙️';
+}
+
+function selPill(el,type){
+  if(type==='diff'){
+    document.querySelectorAll('.pill[data-v="easy"],.pill[data-v="medium"],.pill[data-v="hard"]').forEach(p=>p.classList.remove('se','sm','sh'));
+    const map={easy:'se',medium:'sm',hard:'sh'};
+    el.classList.add(map[el.dataset.v]);
+    cfg.diff=el.dataset.v;
+  } else {
+    document.querySelectorAll('.pill[data-v="3"],.pill[data-v="5"],.pill[data-v="8"]').forEach(p=>p.classList.remove('sc'));
+    el.classList.add('sc');
+    cfg.cnt=parseInt(el.dataset.v);
+  }
+}
+
+// ── INTERVIEW ─────────────────────────────────────────────────
+async function begin(){
+  if(!cfg.role)return;
+  // Request mic permission first
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    stream.getTracks().forEach(t=>t.stop());
+  }catch(e){
+    alert('Microphone access denied. Please allow mic in browser settings and try again.');
+    return;
+  }
+  const pool=QB[cfg.role]?.[cfg.diff]||[];
+  qs=[...pool].sort(()=>Math.random()-.5).slice(0,Math.min(cfg.cnt,pool.length));
+  if(!qs.length){alert('No questions available.');return;}
+  qi=0;results=[];t0=Date.now();
+  show('s-iv');
+  loadQ();
+}
+
+function loadQ(){
+  stopRec(false);
+  const q=qs[qi];
+  document.getElementById('qtk').textContent=`Q ${qi+1} / ${qs.length}`;
+  document.getElementById('pf').style.width=`${(qi/qs.length)*100}%`;
+  document.getElementById('qtxt').textContent=q.q;
+  document.getElementById('hbox').textContent=q.h;
+  document.getElementById('hbox').classList.remove('op');
+  document.getElementById('hlbl').textContent='Show hint';
+  setT('','');
+  document.getElementById('fbcard').style.display='none';
+  document.getElementById('nav').style.display='none';
+  setMic('idle','Tap to speak','Tap once to start, tap again to stop');
+  document.getElementById('waves').classList.remove('on');
+  resetTimer();
+}
+
+function toggleH(){
+  const b=document.getElementById('hbox');
+  const op=b.classList.toggle('op');
+  document.getElementById('hlbl').textContent=op?'Hide hint':'Show hint';
+}
+
+function resetTimer(){
+  clearInterval(tid);tLeft=120;renderTmr();
+  tid=setInterval(()=>{
+    tLeft--;renderTmr();
+    if(tLeft<=0){clearInterval(tid);stopRec(true);}
+  },1000);
+}
+
+function renderTmr(){
+  const el=document.getElementById('tmr');
+  const m=Math.floor(tLeft/60),s=tLeft%60;
+  el.textContent=`${m}:${s.toString().padStart(2,'0')}`;
+  el.className='tmr'+(tLeft<=20?' w':'');
+}
+
+function setMic(state,label,sub){
+  const r=document.getElementById('mring');
+  r.className='micring'+(state!=='idle'?' '+state:'');
+  document.getElementById('mstat').textContent=label;
+  document.getElementById('msub').textContent=sub;
+}
+
+function setT(txt,mode){
+  const el=document.getElementById('tbox');
+  el.textContent=txt||'Your answer appears here as you speak...';
+  el.className='tbox'+(mode==='live'?' live':'');
+}
+
+// ── RECORDING — improved for Android ─────────────────────────
+function toggleMic(){
+  if(isRec) stopRec(true);
+  else startRec();
+}
+
+function startRec(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    setMic('idle','Not supported on this browser','Please use Chrome');
+    return;
+  }
+  finalT='';interim='';
+  rec=new SR();
+  rec.continuous=false;   // false works more reliably on Android
+  rec.interimResults=true;
+  rec.lang='en-IN';       // Indian English for better accuracy
+  rec.maxAlternatives=1;
+
+  rec.onstart=()=>{
+    isRec=true;
+    setMic('rec','Listening... tap to stop','Speak clearly');
+    document.getElementById('waves').classList.add('on');
+  };
+
+  rec.onresult=(e)=>{
+    let iText='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t=e.results[i][0].transcript;
+      if(e.results[i].isFinal) finalT+=t+' ';
+      else iText+=t;
+    }
+    interim=iText;
+    setT((finalT+interim).trim(),'live');
+  };
+
+  rec.onerror=(e)=>{
+    document.getElementById('waves').classList.remove('on');
+    if(e.error==='no-speech'){
+      // restart automatically on no-speech
+      if(isRec){rec.stop();setTimeout(()=>{if(isRec)rec.start();},300);}
+    } else if(e.error==='not-allowed'){
+      isRec=false;
+      setMic('idle','Mic blocked','Go to Chrome settings and allow microphone');
+    } else {
+      // other errors — just restart
+      if(isRec){try{rec.stop();}catch(_){}setTimeout(()=>{if(isRec)startRecInner();},500);}
+    }
+  };
+
+  rec.onend=()=>{
+    document.getElementById('waves').classList.remove('on');
+    if(isRec){
+      // Auto restart to keep recording going
+      setTimeout(()=>{
+        if(isRec) startRecInner();
+      },200);
+    }
+  };
+
+  rec.start();
+}
+
+function startRecInner(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  try{
+    rec=new SR();
+    rec.continuous=false;
+    rec.interimResults=true;
+    rec.lang='en-IN';
+    rec.maxAlternatives=1;
+    rec.onstart=()=>{document.getElementById('waves').classList.add('on');}
+    rec.onresult=(e)=>{
+      let iText='';
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        const t=e.results[i][0].transcript;
+        if(e.results[i].isFinal) finalT+=t+' ';
+        else iText+=t;
+      }
+      interim=iText;
+      setT((finalT+interim).trim(),'live');
+    };
+    rec.onerror=(e)=>{
+      document.getElementById('waves').classList.remove('on');
+      if(isRec&&e.error!=='not-allowed'){setTimeout(()=>{if(isRec)startRecInner();},500);}
+    };
+    rec.onend=()=>{
+      document.getElementById('waves').classList.remove('on');
+      if(isRec){setTimeout(()=>{if(isRec)startRecInner();},200);}
+    };
+    rec.start();
+  }catch(_){}
+}
+
+function stopRec(evaluate){
+  isRec=false;
+  if(rec){
+    rec.onend=null;rec.onerror=null;
+    try{rec.stop();}catch(_){}
+    rec=null;
+  }
+  document.getElementById('waves').classList.remove('on');
+  clearInterval(tid);
+  const answer=(finalT+interim).trim();
+  if(evaluate&&answer.length>5){
+    setMic('thinking','Getting AI feedback...','Please wait a moment');
+    getFeedback(answer);
+  } else if(evaluate){
+    setMic('idle','Nothing recorded','Tap the mic and try again');
+    resetTimer();
+  } else {
+    setMic('idle','Tap to speak','Tap once to start, tap again to stop');
+  }
+}
+
+// ── AI FEEDBACK ───────────────────────────────────────────────
+async function getFeedback(answer){
+  document.getElementById('fbcard').style.display='block';
+  document.getElementById('fbcontent').innerHTML='<p style="text-align:center;color:var(--muted);font-size:13px;padding:16px 0">Analysing your answer...</p>';
+
+  const key=localStorage.getItem('iv_api_key')||API_KEY;
+  if(!key||!key.startsWith('sk-')){
+    document.getElementById('fbcontent').innerHTML='<p style="color:var(--red);font-size:13px">No API key found. <button onclick="changeKey()" style="color:var(--accent);background:none;border:none;cursor:pointer;font-size:13px">Add your key</button></p>';
+    document.getElementById('nav').style.display='flex';
+    results.push({q:qs[qi].q,answer,fb:null});
+    return;
+  }
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:600,
+        messages:[{
+          role:'user',
+          content:`You are a technical interviewer for a ${cfg.role} position (${cfg.diff} level).
+
+Question: "${qs[qi].q}"
+Candidate answer: "${answer}"
+
+Reply ONLY in this JSON, no extra text:
+{"clarity":7,"technical":6,"completeness":5,"overall":"Good","strengths":"One or two sentences.","improvements":"One or two sentences.","ideal":"Two or three key points a great answer includes."}`
+        }]
+      })
+    });
+
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      throw new Error(err.error?.message||'API error '+res.status);
+    }
+
+    const d=await res.json();
+    const raw=d.content?.map(c=>c.text||'').join('')||'';
+    const fb=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    results.push({q:qs[qi].q,answer,fb});
+    renderFB(fb);
+    setMic('done','Done! Tap mic to re-record','');
+  }catch(e){
+    console.error(e);
+    results.push({q:qs[qi].q,answer,fb:null});
+    document.getElementById('fbcontent').innerHTML=`<p style="color:var(--red);font-size:13px">Error: ${e.message||'Could not get feedback'}.<br/>Check your API key and internet connection.</p>`;
+    setMic('idle','Tap to re-record','');
+  }
+  document.getElementById('nav').style.display='flex';
+}
+
+function renderFB(fb){
+  const ov=fb.overall;
+  const [obg,oc]=ov==='Excellent'?['#052E16','#34D399']:ov==='Good'?['#1C1917','#FBBF24']:['#2D0A0A','#F87171'];
+  document.getElementById('fbcontent').innerHTML=`
+    <span class="ovbadge" style="background:${obg};color:${oc}">${ov}</span>
+    <div class="scores">
+      <div class="sbox"><span class="sv" style="color:#38BDF8">${fb.clarity}</span><span class="sk">Clarity</span></div>
+      <div class="sbox"><span class="sv" style="color:#34D399">${fb.technical}</span><span class="sk">Technical</span></div>
+      <div class="sbox"><span class="sv" style="color:#FBBF24">${fb.completeness}</span><span class="sk">Complete</span></div>
+    </div>
+    <div class="fbrow"><div class="lb" style="color:#34D399">✓ Strengths</div><div class="bd">${fb.strengths}</div></div>
+    <div class="fbrow"><div class="lb" style="color:#FBBF24">↑ Improve</div><div class="bd">${fb.improvements}</div></div>
+    <div class="fbrow"><div class="lb" style="color:#38BDF8">💡 Key points</div><div class="bd">${fb.ideal}</div></div>`;
+}
+
+function nextQ(){qi++;qi>=qs.length?showSum():loadQ();}
+function skipQ(){results.push({q:qs[qi].q,answer:'(skipped)',fb:null});nextQ();}
+function endEarly(){clearInterval(tid);stopRec(false);results.length?showSum():show('s-setup');}
+
+function showSum(){
+  show('s-sum');
+  const ans=results.filter(r=>r.fb).length;
+  const sc=results.filter(r=>r.fb).map(r=>Math.round((r.fb.clarity+r.fb.technical+r.fb.completeness)/3));
+  const avg=sc.length?Math.round(sc.reduce((a,b)=>a+b,0)/sc.length):0;
+  const el=Math.round((Date.now()-t0)/1000);
+  document.getElementById('savg').textContent=avg?`${avg}/10`:'—';
+  document.getElementById('sans').textContent=`${ans}/${qs.length}`;
+  document.getElementById('stm').textContent=`${Math.floor(el/60)}:${(el%60).toString().padStart(2,'0')}`;
+  const bc=o=>o==='Excellent'?['#052E16','#34D399']:o==='Good'?['#1C1917','#FBBF24']:o==='Needs Work'?['#2D0A0A','#F87171']:['var(--surface)','var(--dim)'];
+  document.getElementById('revlist').innerHTML=results.map((r,i)=>{
+    const ov=r.fb?.overall||'Skipped';
+    const [bg,c]=bc(ov);
+    return `<div class="ritem">
+      <div style="margin-bottom:5px"><span style="background:${bg};color:${c};padding:2px 10px;border-radius:14px;font-size:11px;font-weight:700">${ov}</span></div>
+      <div class="rq">Q${i+1}: ${r.q}</div>
+      ${r.fb?`<div class="rfb">↑ ${r.fb.improvements}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function restart(){
+  cfg={role:null,diff:'medium',cnt:5};
+  document.querySelectorAll('.rcard').forEach(c=>c.classList.remove('sel'));
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('se','sm','sh','sc'));
+  document.querySelector('[data-v="medium"]').classList.add('sm');
+  document.querySelector('[data-v="5"]').classList.add('sc');
+  const b=document.getElementById('sbtn');
+  b.disabled=true;b.textContent='Select a role to start';
+  show('s-setup');
+}
+
+function show(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
